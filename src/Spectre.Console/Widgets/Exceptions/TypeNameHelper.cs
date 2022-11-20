@@ -1,10 +1,10 @@
-﻿namespace Spectre.Console;
+namespace Spectre.Console;
 
 internal static class TypeNameHelper
 {
     // from  https://github.com/benaadams/Ben.Demystifier/blob/main/src/Ben.Demystifier/TypeNameHelper.cs
     // which was adapted from https://github.com/aspnet/Common/blob/dev/shared/Microsoft.Extensions.TypeNameHelper.Sources/TypeNameHelper.cs
-    public static readonly Dictionary<Type, string> BuiltInTypeNames = new Dictionary<Type, string>
+    private static readonly Dictionary<Type, string> BuiltInTypeNames = new Dictionary<Type, string>
     {
         { typeof(void), "void" },
         { typeof(bool), "bool" },
@@ -24,7 +24,7 @@ internal static class TypeNameHelper
         { typeof(ushort), "ushort" },
     };
 
-    public static readonly Dictionary<string, string> FSharpTypeNames = new Dictionary<string, string>
+    private static readonly Dictionary<string, string> FSharpTypeNames = new Dictionary<string, string>
     {
         { "Unit", "void" },
         { "FSharpOption", "Option" },
@@ -47,6 +47,12 @@ internal static class TypeNameHelper
         return builder.ToString();
     }
 
+    /// <summary>
+    /// Processes type of text within the console.
+    /// </summary>
+    /// <param name="builder">builder.</param>
+    /// <param name="type">type.</param>
+    /// <param name="options">options.</param>
     private static void ProcessType(StringBuilder builder, Type type, DisplayNameOptions options)
     {
         if (type.IsGenericType)
@@ -93,6 +99,12 @@ internal static class TypeNameHelper
         }
     }
 
+    /// <summary>
+    /// Processes array type.
+    /// </summary>
+    /// <param name="builder">builder.</param>
+    /// <param name="type">type.</param>
+    /// <param name="options">options.</param>
     private static void ProcessArrayType(StringBuilder builder, Type type, DisplayNameOptions options)
     {
         var innerType = type;
@@ -120,6 +132,14 @@ internal static class TypeNameHelper
         }
     }
 
+    /// <summary>
+    /// Processes generic type.
+    /// </summary>
+    /// <param name="builder">builder.</param>
+    /// <param name="type">type.</param>
+    /// <param name="genericArguments">genericArguments.</param>
+    /// <param name="length">length.</param>
+    /// <param name="options">options.</param>
     private static void ProcessGenericType(StringBuilder builder, Type type, Type[] genericArguments, int length,
         DisplayNameOptions options)
     {

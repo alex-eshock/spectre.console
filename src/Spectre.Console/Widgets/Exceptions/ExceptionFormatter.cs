@@ -55,7 +55,20 @@ internal static class ExceptionFormatter
             .GetFrames()
             .FilterStackFrames()
             .ToList();
+        ConstructStackFrames(settings, styles, grid, frames);
 
+        return grid;
+    }
+
+    /// <summary>
+    /// for loop used to construct stacked frames in the GetStackFrames method.
+    /// </summary>
+    /// <param name="settings">settings.</param>
+    /// <param name="styles">styles.</param>
+    /// <param name="grid">grid.</param>
+    /// <param name="frames">frames.</param>
+    private static void ConstructStackFrames(ExceptionSettings settings, ExceptionStyle styles, Grid grid, List<StackFrame> frames)
+    {
         foreach (var frame in frames)
         {
             var builder = new StringBuilder();
@@ -109,8 +122,6 @@ internal static class ExceptionFormatter
                 $"[{styles.Dimmed.ToMarkup()}]at[/]",
                 builder.ToString());
         }
-
-        return grid;
     }
 
     private static void AppendParameters(StringBuilder builder, MethodBase? method, ExceptionSettings settings)
@@ -122,7 +133,7 @@ internal static class ExceptionFormatter
 
         if (parameters != null)
         {
-            builder.Append(string.Join(", ", parameters));
+            builder.AppendJoin(", ", parameters);
         }
     }
 
@@ -139,7 +150,9 @@ internal static class ExceptionFormatter
             var hasLink = path.TryGetUri(out var uri);
             if (hasLink && uri != null)
             {
-                builder.Append("[link=").Append(uri.AbsoluteUri).Append(']');
+                builder.Append("[link=")
+                    .Append(uri.AbsoluteUri)
+                    .Append(']');
             }
 
             AppendPath();
@@ -405,13 +418,6 @@ internal static class ExceptionFormatter
             return false;
         }
 
-        static IEnumerable<MethodInfo> GetDeclaredMethods(IReflect type) => type.GetMethods(
-            BindingFlags.Public |
-            BindingFlags.NonPublic |
-            BindingFlags.Static |
-            BindingFlags.Instance |
-            BindingFlags.DeclaredOnly);
-
         var methods = GetDeclaredMethods(parentType);
 
         foreach (var candidateMethod in methods)
@@ -446,4 +452,11 @@ internal static class ExceptionFormatter
 
         return false;
     }
+
+    private static IEnumerable<MethodInfo> GetDeclaredMethods(IReflect type) => type.GetMethods(
+                BindingFlags.Public |
+                BindingFlags.NonPublic |
+                BindingFlags.Static |
+                BindingFlags.Instance |
+                BindingFlags.DeclaredOnly);
 }
